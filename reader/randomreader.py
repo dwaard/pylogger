@@ -2,7 +2,7 @@ import random, time, datetime
 
 samplerate = 5
 
-class Reader:
+class RandomReader:
 
     # Format: {correction};{setpoint};T1;T2;...
     def read(self) :
