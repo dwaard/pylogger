@@ -89,14 +89,18 @@ class Plotter:
     def plot(self, data):
         new_x = self.update(self.secondYAxes.get_xdata(), data[0])
         self.set_data(self.firstYAxes, new_x, data[1])
-        self.set_data(self.secondYAxes, new_x, data[2])
-        self.set_data(self.thirdYAxes, new_x, data[3])
-        self.set_data(self.fourthYAxes, new_x, data[4])
-        self.isEmpty = False
         self.firstYAxes.set_label(u"Set: (%.1f\u00b0C)" % data[1])
+
+        self.set_data(self.secondYAxes, new_x, data[2])
         self.secondYAxes.set_label(u"In: (%.1f\u00b0C)" % data[2])
+        
+        self.set_data(self.thirdYAxes, new_x, data[3])
         self.thirdYAxes.set_label(u"Out: (%.1f%%)" % data[3])
+        
+        self.set_data(self.fourthYAxes, new_x, data[4])
         self.fourthYAxes.set_label(u"Pulse: (%.1fs)" % data[4])
+        
+        self.isEmpty = False
         plt.legend(handles=[self.firstYAxes, self.secondYAxes, self.thirdYAxes, self.fourthYAxes], loc=4)
         # find the correct upper and lower limits
         if len(new_x)>1:

@@ -1,0 +1,63 @@
+timestamp:
+  type: date
+  params:
+    required: false
+    format: "%Y-%m-%d %H:%M:%S.%f"
+  plot:
+    format: "%H:%M:%S"
+
+set:
+  type: float
+  params:
+    required: true
+    min: -50
+    max: 50
+    decimals: 2
+  plot:
+    axis_title: Temp
+    axis_location: left
+    color: red
+    min: 19
+    max: 24
+    title: Set
+    unit: "\u00b0C"
+
+measured:
+  type: float
+  params:
+    required: true
+    min: -50
+    max: 50
+    decimals: 2
+  plot:
+    link_limits : set
+    min: 19
+    max: 24
+    color: blue
+    title: Input
+    unit: "\u00b0C"
+    axis_location: none
+
+# output:
+#   type: float
+#   params:
+#     required: true
+#     min: 0
+#     max: 100
+#     decimals: 2
+#   plot:
+#     title: Output
+#     color: green
+#     unit: "%"
+
+duty_cycle:
+  type: float
+  params:
+    required: true
+    min: 0
+    max: 5
+    decimals: 2
+  plot:
+    title: Output
+    color: green
+    unit: "s"

@@ -1,4 +1,9 @@
 python-dotenv
+colorama
 pyserial
+pyyaml
+pydantic
+openpyxl
+rstr
 matplotlib
 numpy
