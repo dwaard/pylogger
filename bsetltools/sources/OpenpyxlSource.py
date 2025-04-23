@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 
 class OpenpyxlSource:
 
-    def __init__(self, file="", worksheet_index=0):
+    def __init__(self, file="", worksheet_index=0, skip_rows=0):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             workbook = load_workbook(filename = file, data_only=True)

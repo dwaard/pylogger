@@ -27,6 +27,7 @@ class Parser:
                 return result
             except Exception as e:
                 logging.debug(f"Parser skipped: {data}. Cause: {e}")
+                
 
 
     def parse_as_dict(self, data):
@@ -60,17 +61,11 @@ class Parser:
 
     def parse_field(self, key, value, val_data):
         # test the field on NoneType and validate nullable
-        if self.parse_none(key, value, **self.get_params(val_data)):
+        if self.parse_none(key, value, **val_data):
             return None
         # find a parser method to call and call it
         method = self.get_parser_method(key, val_data['type'])
-        return method(key, value, **self.get_params(val_data))
-
-
-    def get_params(self, val_data):
-        if 'params' not in val_data:
-            return {}
-        return val_data['params']
+        return method(key, value, **val_data)
 
 
     def get_parser_method(self, key, type):
@@ -147,10 +142,14 @@ class Parser:
                 raise Exception("{} is too high for {}".format(value, key))
         return floatval
 
-
     def parse_date(self, key, value, **kwargs):
+        return self.parse_datetime(key, value, **kwargs)
+
+
+    def parse_datetime(self, key, value, **kwargs):
         if 'format' not in kwargs:
-            raise Exception("No dat format found for {}[{}]".format(key, value))
+            print(kwargs)
+            raise Exception("No date format found for {}[{}]".format(key, value))
         return datetime.strptime(value, kwargs['format'])
 
 

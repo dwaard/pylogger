@@ -4,6 +4,8 @@ import logging
 import json
 import colorama
 from bsetltools.ColoredFormatter import ColoredFormatter
+from datetime import datetime
+from pathlib import Path
 
 
 def init():
@@ -48,6 +50,16 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         return
 
     logging.critical("Unhandled exception", exc_info=(exc_type, exc_value, exc_traceback))
+
+
+def buildTargetFilename(filetemplate, timestamp_format="%d-%m-%Y_%H_%M_%S", delimiter='_'):
+  """Creates a filename that includes a formatted timestamp between its stem and suffix"""
+  # Create the timestamp
+  timestamp = datetime.now().strftime(timestamp_format)
+  # Use Path to breakup the filename
+  path = Path(filetemplate)
+  filename = path.with_name(f"{path.stem}{delimiter}{timestamp}{path.suffix}")
+  return filename
 
 
 def configure_logging(verbosity: int):
