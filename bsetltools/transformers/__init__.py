@@ -7,6 +7,11 @@ import logging
 
 
 def mapper(source, callback_function, verbosity=0):
+  """
+  Transforms the source data using the specified callback funtion.
+  For each line, the callback function is called and the return value
+  of the function is yielded.
+  """
   if verbosity > 1:
     logging.info(f"MapperTransformer: opening {source}")
   for line in source:
@@ -14,6 +19,7 @@ def mapper(source, callback_function, verbosity=0):
     if verbosity > 2:
       logging.debug(f"MapperTransformer: mapped {result}")
     yield result
+
 
 def rowDictTransformer(source, keys, verbosity=0):
   """
@@ -145,3 +151,12 @@ def paced_iter(source, interval=0, verbosity=0):
         logging.debug(f"PacedItertransformer: sleeping for {sleep_duration}")
       time.sleep(sleep_duration)
       
+
+def joiner(sources, delimiter=',', verbosity=0):
+  if verbosity > 1:
+    logging.info(f"Joinertransformer: starting with delimiter {delimiter}")
+  while True:
+    data = delimiter.join([next(source) for source in sources])
+    if verbosity > 2:
+      logging.debug(f"Joinertransformer: joined {data}")
+    yield data

@@ -26,15 +26,14 @@ class PlotTarget:
 
   def init(self):
     # build the required buffers
-    self.timestamps = deque([datetime.datetime.now()]*self.max_samples, maxlen=self.max_samples)
-    self.data_buffers = [deque([0]*self.max_samples, maxlen=self.max_samples) for _ in range(self.num_lines)]
+    self.timestamps = deque(maxlen=self.max_samples)
+    self.data_buffers = [deque(maxlen=self.max_samples) for _ in range(self.num_lines)]
     self.keys = []
     self.configs = []
     self.axes = []
     self.lines = []
     is_first = True
     for index, (key, cfg) in enumerate(self.config.items()):
-      logging.warning(f"{cfg}")
       self.configs.append(cfg)
       if key == 'timestamp':
         self.configureXAxis(self.axis, key, **cfg['axis'])
@@ -49,7 +48,7 @@ class PlotTarget:
 
   def configureXAxis(self, axis, key, location, format='%H:%M:%S', color='black', 
                 limits={'auto':True, 'min':0, 'max':1, 'links':[]}):
-    logging.info(f"Building the X-axis with configuration of {key}")
+    logging.debug(f"Building the X-axis with configuration of {key}")
     # build the x-axis
     axis.xaxis_date()
     myFmt = mdates.DateFormatter(format)
@@ -60,7 +59,7 @@ class PlotTarget:
 
   def configureYAxis(self, axis, index, key, title="", location='left', format=None, color='black', 
                 limits={'auto':True, 'min':0, 'max':1, 'links':[]}):
-    logging.info(f"Building the Y-axis with configuration of {key}")
+    logging.debug(f"Building the Y-axis with configuration of {key}")
     # build the axis
     axis.set_ylabel(title, color=color)
     axis.set_label(title)
@@ -71,12 +70,6 @@ class PlotTarget:
       if self.rigt_outward_position > 0:
         axis.spines[location].set_position(("outward", self.rigt_outward_position))  # schuif hem iets opzij
       self.rigt_outward_position += 50
-    # # Set the limits
-    # is_auto = 'auto' in limits and limits['auto'] == True
-    # ymin = 0 if is_auto else limits['ymin']
-    # ymax = 1 if is_auto else limits['ymax']
-    # margin = (ymax - ymin) * 0.1 if ymax > ymin else 1
-    # axis.set_ylim(ymin - margin, ymax + margin)
     self.axes.append(axis)
 
 
@@ -84,7 +77,6 @@ class PlotTarget:
     """
     NOTE: it is assumed that the first entry in data is the timestamp (X-value)
     """
-
     if not self.data_buffers:
       self.init()
     # append the data to the buffers
@@ -98,21 +90,21 @@ class PlotTarget:
       config = self.configs[i+1]
       # update the data
       line.set_data(self.timestamps, self.data_buffers[i])
-      self.axes[i].set_xlim(self.timestamps[0], self.timestamps[-1])
+      if len(self.timestamps) > 0:
+        self.axes[i].set_xlim(self.timestamps[0], self.timestamps[-1])
       # update the scale, if limits.auto==True
       if 'limits' in config['axis']:
         self.updateScaling(i, **config['axis']['limits'])
       # build the label
       self.buildLabel(self.lines[i], data[i+1], **config['label'])
-
-    plt.legend(handles=self.lines)
+    plt.legend(handles=self.lines, loc='lower center')
     plt.draw()
 
 
   def updateScaling(self, index, auto=False, links=[], ymin=0, ymax=1):
     if auto:
       indexes = [index]
-      all_data = self.data_buffers[index]
+      all_data = list(self.data_buffers[index])
       for key in links:
         if key in self.keys:
           index2 = self.keys.index(key)
@@ -123,30 +115,12 @@ class PlotTarget:
       ymin, ymax = min(all_data), max(all_data)
       margin = (ymax - ymin) * 0.1 if ymax > ymin else 1
       for i in indexes:
-        logging.warning(f"updating auto limits: {ymin - margin}-{ymax + margin}")
         self.axes[i].set_ylim(ymin - margin, ymax + margin)   
     else:
       margin = (ymax - ymin) * 0.1 if ymax > ymin else 1
-      logging.warning(f"updating fixed limits: {ymin - margin}-{ymax + margin}")
       self.axes[index].set_ylim(ymin - margin, ymax + margin)
-    pass
 
 
   def buildLabel(self, line, value, color='black', template="{value}"):
     ylabel = template.format(value=value)
     line.set_label(ylabel)
-    pass
-
-
-  # def update(self, data, new_value):
-  #   if self.isEmpty:
-  #     old = []
-  #   else: 
-  #     old = list(data)
-  #   while len(old) >= self.max_samples:
-  #     del old[0]
-  #   return np.append(old, new_value)
-
-  # def set_data(self, plot, x, new_val):
-  #   plot.set_xdata(x)
-  #   plot.set_ydata(self.update(plot.get_ydata(), new_val))

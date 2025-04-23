@@ -2,6 +2,7 @@ from bsetltools.sources.OpenpyxlSource import OpenpyxlSource
 from bsetltools.sources.MultiFileSource import MultiFileSource
 from bsetltools.sources.RandomSource import RandomSource
 import serial as serial_module
+from datetime import datetime
 import logging
 
 def file(*args, verbosity=0, **kwargs):
@@ -79,6 +80,29 @@ def random(*args, **kwargs):
   Opens a Random source. 
   """
   return RandomSource(*args, **kwargs)
+
+
+def const_source(value):
+  """
+  A source that yields a constant value
+  """
+  while True:
+    yield(value)
+
+
+def func_source(callback_function):
+  """
+  A source that yields the return value of the specified callback function.
+
+  The function must accept a float that represents the time in seconds since
+  the source started.
+  """
+  start_time = datetime.now()
+  yield(callback_function(0))
+  while True:
+    now = datetime.now()
+    delta = now - start_time
+    yield(callback_function(delta.total_seconds()))
 
 
 def socket(*args, **kwargs):

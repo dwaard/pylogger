@@ -130,13 +130,13 @@ def buildSource(args):
   if stream:
     stream = transformers.timestampExtender(stream, format=timestamp_parser_format, verbosity=args.verbose)
   # the different file streams already have a timestamp
-  # stream = sources.file('.out/test.csv', mode='r', newline='', encoding='utf-8', verbosity=args.verbose)
+  # stream = sources.file('.out/log_20-04-2025_13_40_59.csv', mode='r', newline='', encoding='utf-8', verbosity=args.verbose)
   # stream = sources.multifile('.out', pattern='log_*.csv', verbosity=args.verbose)
   # split as csv and parse using the config rules
   stream = transformers.csv(stream, delimiter=delimiter, verbosity=args.verbose)
   stream = transformers.mapper(stream, remove_output_column, args.verbose)
   stream = transformers.parser(stream, parser_rules, verbosity=args.verbose)
-  stream = transformers.paced_iter(stream, 1, args.verbose)
+  # stream = transformers.paced_iter(stream, 0.05, args.verbose)
   return stream
 
 
@@ -144,8 +144,8 @@ def buildTarget(args):
   fig, axes = plt.subplots()
   target = targets.multiTarget([
     targets.plotTarget(axes, plotter_configs),
-    targets.consoleTarget(),
-    # targets.fileTarget(bsetltools.buildLogFilename('log.csv'), 'w')
+    # targets.consoleTarget(),
+    targets.fileTarget(bsetltools.buildTargetFilename('.out/log.csv'), 'w')
   ])
   return target
   # return targets.consoleTarget()
