@@ -21,13 +21,10 @@ config = {
       "axis" : {
         "location" : "right", 
         "title" : "Temp (°C)",
-        "limits" : {
-          "auto" : True,
-          "links" : ["set", "measured"]
-        }
+        "limits" : { "auto" : True, "links" : ["set", "measured"] }
       },
       "line" : { "color" : "red" },
-      "label" : { "template" : "Set: {value:.2f}°C", "color" : "red"},
+      "label" : { "template" : "Set: {value:.1f}°C", "color" : "red"},
     }
   },
   "measured" : {
@@ -35,7 +32,7 @@ config = {
     "plotter" : {
       "axis" : { "location" : "none" },
       "line" : { "color" : "blue" },
-      "label" : { "template" : "In: {value:.2f}°C"},
+      "label" : { "template" : "In: {value:.1f}°C"},
     }
   },
   "duty_cycle" : {
@@ -44,10 +41,7 @@ config = {
       "axis" : {
         "location" : "left",
         "title" : "Out (sec)",
-        "limits" : {
-          "ymin" : 0,
-          "ymax" : 5
-        },
+        "limits" : { "ymin" : 0, "ymax" : 5 },
       },
       "line" : { "color" : "green" },
       "label" : { "template" : "Out: {value:.2f}sec"},
@@ -91,9 +85,9 @@ def buildSource(args):
 def buildTarget(args):
   serializer = transformers.serializer(None, parser_rules, delimiter=delimiter, verbosity=args.verbose)
   target = targets.multiTarget([
-    targets.plotTarget(plotter_configs, title='Proofingcontroller'),
+    targets.plotTarget(plotter_configs, title='Proofingcontroller', max_samples=1500),
     targets.consoleTarget(serializer=serializer),
-    # targets.fileTarget(bsetltools.buildTargetFilename('.out/log.csv'), 'w', serializer=serializer)
+    targets.fileTarget(bsetltools.buildTargetFilename('.out/log.csv'), 'w', serializer=serializer)
   ])
   return target
   # return targets.consoleTarget()

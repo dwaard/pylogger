@@ -114,7 +114,7 @@ def capture_exceptions_to_logging(exc_type, exc_value, exc_traceback):
   logging.critical("Unhandled exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
-def buildTargetFilename(filetemplate, timestamp_format="%d-%m-%Y_%H_%M_%S", delimiter='_'):
+def buildTargetFilename(filetemplate, timestamp_format="%Y-%m-%d_%H_%M_%S", delimiter='_'):
   """
   Helper function that creates a filename that includes a formatted timestamp 
   between its stem and suffix

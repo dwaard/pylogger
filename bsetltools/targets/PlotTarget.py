@@ -9,7 +9,7 @@ import warnings, logging
 
 class PlotTarget:
 
-  def __init__(self, config, title='BSETools plot target', max_samples=3000, verbosity=0):
+  def __init__(self, config, title='BSETools plot target', max_samples=500, verbosity=0):
     fig, axis = plt.subplots()
     plt.title(title)
     with warnings.catch_warnings(action="ignore"):
@@ -22,12 +22,6 @@ class PlotTarget:
     self.data_buffers = []
     self.rigt_outward_position = 0
     self.init()
-
-
-  def buildLine(self, axis, **kwargs):
-    default_val = 0 # float('nan')
-    line, = axis.plot(datetime.datetime.now(), default_val, **kwargs)
-    self.lines.append(line)
 
 
   def init(self):
@@ -47,7 +41,8 @@ class PlotTarget:
         self.keys.append(key)
         current_axes = self.axis.twinx()
         self.configureYAxis(current_axes, index, key, **cfg['axis'])
-        self.buildLine(current_axes, **cfg['line'])
+        line, = current_axes.plot(datetime.datetime.now(), 0, **cfg['line'])
+        self.lines.append(line)
     self.isEmpty = True
 
 
