@@ -78,25 +78,6 @@ class Serializer:
         return getattr(self,func_name) 
 
 
-    # def serialize_none(self, key, value, **kwargs):
-    #     # test if value is None-like
-    #     is_none = False
-    #     if self.is_none_like(value):
-    #         is_none = True
-    #     # test if it is allowed to be None
-    #     if is_none and ('nullable' not in kwargs or kwargs['nullable']==False):
-    #         raise Exception('Field {}[value:{}] is not allowed to be of NoneType'.format(key, value))
-    #     return is_none
-
-
-    # def is_none_like(self, value):
-    #     if value is None:
-    #         return True
-    #     if isinstance(value, str):
-    #         return len(value)==0 or value=='NULL'
-    #     return False
-
-
     def serialize_str(self, key, value, **kwargs):
         return value
 
