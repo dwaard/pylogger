@@ -2,6 +2,10 @@ import logging
 from colorama import Fore, Back, Style
 
 class ColoredFormatter(logging.Formatter):
+    """
+    Custom logging formatter that uses colorama to format log messages for
+    different logging levels with different color settings
+    """
     COLORS = {
         logging.DEBUG: Fore.LIGHTBLACK_EX,
         logging.INFO: Fore.WHITE,

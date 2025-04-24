@@ -1,13 +1,19 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import mplcursors
 import numpy as np
 import datetime
 from collections import deque
-import logging
+import warnings, logging
+
 
 class PlotTarget:
 
-  def __init__(self, axis, config, max_samples=3000, verbosity=0):
+  def __init__(self, config, title='BSETools plot target', max_samples=3000, verbosity=0):
+    fig, axis = plt.subplots()
+    plt.title(title)
+    with warnings.catch_warnings(action="ignore"):
+      plt.legend()
     self.verbosity = verbosity
     self.axis = axis
     self.config = config
@@ -15,7 +21,7 @@ class PlotTarget:
     self.num_lines = len(config) - 1
     self.data_buffers = []
     self.rigt_outward_position = 0
-
+    self.init()
 
 
   def buildLine(self, axis, **kwargs):
@@ -32,15 +38,14 @@ class PlotTarget:
     self.configs = []
     self.axes = []
     self.lines = []
-    is_first = True
+    self.axis.get_yaxis().set_visible(False) # verberg de hoofdas
     for index, (key, cfg) in enumerate(self.config.items()):
       self.configs.append(cfg)
       if key == 'timestamp':
         self.configureXAxis(self.axis, key, **cfg['axis'])
       else:
         self.keys.append(key)
-        current_axes = self.axis if is_first else self.axis.twinx()
-        is_first = False
+        current_axes = self.axis.twinx()
         self.configureYAxis(current_axes, index, key, **cfg['axis'])
         self.buildLine(current_axes, **cfg['line'])
     self.isEmpty = True
@@ -54,23 +59,32 @@ class PlotTarget:
     myFmt = mdates.DateFormatter(format)
     axis.xaxis.set_major_formatter(myFmt)
     axis.xaxis.grid()  # vertical lines
-    # self.axes.append(axis.xaxis)
 
 
   def configureYAxis(self, axis, index, key, title="", location='left', format=None, color='black', 
                 limits={'auto':True, 'min':0, 'max':1, 'links':[]}):
-    logging.debug(f"Building the Y-axis with configuration of {key}")
+    logging.debug(f"Building the Y-axis with configuration of {key}, location {location}")
     # build the axis
     axis.set_ylabel(title, color=color)
     axis.set_label(title)
     axis.tick_params('y', colors=color)
     if location == 'none':
       axis.get_yaxis().set_visible(False)  # verberg de y-as zelf
-    elif location == 'right':
-      if self.rigt_outward_position > 0:
-        axis.spines[location].set_position(("outward", self.rigt_outward_position))  # schuif hem iets opzij
-      self.rigt_outward_position += 50
+    else:
+      axis.yaxis.set_label_position(location)
+      if location == 'right':
+        axis.spines['right'].set_visible(True)
+        axis.spines['left'].set_visible(False)
+        axis.yaxis.tick_right()
+        if self.rigt_outward_position > 0:
+          axis.spines['right'].set_position(("outward", self.rigt_outward_position))  # schuif hem iets opzij
+        self.rigt_outward_position += 50
+      else:
+        axis.spines['right'].set_visible(False)
+        axis.spines['left'].set_visible(True)
+        axis.yaxis.tick_left()
     self.axes.append(axis)
+    mplcursors.cursor(axis, hover=True)
 
 
   def write(self, data):
@@ -90,7 +104,7 @@ class PlotTarget:
       config = self.configs[i+1]
       # update the data
       line.set_data(self.timestamps, self.data_buffers[i])
-      if len(self.timestamps) > 0:
+      if len(self.timestamps) > 1:
         self.axes[i].set_xlim(self.timestamps[0], self.timestamps[-1])
       # update the scale, if limits.auto==True
       if 'limits' in config['axis']:

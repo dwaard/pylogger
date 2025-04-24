@@ -6,4 +6,5 @@ pydantic
 openpyxl
 rstr
 matplotlib
+mplcursors
 numpy

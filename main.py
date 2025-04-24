@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import bsetltools
 from bsetltools import ( sources, transformers, targets )
 from bsetltools.ProcessingThread import ProcessingThread
-import warnings
+import warnings, logging
 
 
 config = {
@@ -21,7 +21,6 @@ config = {
       "axis" : {
         "location" : "right", 
         "title" : "Temp (°C)",
-        "color" : "black",
         "limits" : {
           "auto" : True,
           "links" : ["set", "measured"]
@@ -45,7 +44,6 @@ config = {
       "axis" : {
         "location" : "left",
         "title" : "Out (sec)",
-        "color" : "green",
         "limits" : {
           "ymin" : 0,
           "ymax" : 5
@@ -86,16 +84,16 @@ def buildSource(args):
   stream = transformers.csv(stream, delimiter=delimiter, verbosity=args.verbose)
   stream = transformers.mapper(stream, remove_output_column, args.verbose)
   stream = transformers.parser(stream, parser_rules, verbosity=args.verbose)
-  # stream = transformers.paced_iter(stream, 0.05, args.verbose)
+  # stream = transformers.paced_iter(stream, 0.25, args.verbose)
   return stream
 
 
 def buildTarget(args):
-  fig, axes = plt.subplots()
+  serializer = transformers.serializer(None, parser_rules, delimiter=delimiter, verbosity=args.verbose)
   target = targets.multiTarget([
-    targets.plotTarget(axes, plotter_configs),
-    targets.consoleTarget(),
-    targets.fileTarget(bsetltools.buildTargetFilename('.out/log.csv'), 'w')
+    targets.plotTarget(plotter_configs, title='Proofingcontroller'),
+    targets.consoleTarget(serializer=serializer),
+    # targets.fileTarget(bsetltools.buildTargetFilename('.out/log.csv'), 'w', serializer=serializer)
   ])
   return target
   # return targets.consoleTarget()
@@ -116,9 +114,6 @@ def main():
   # Complex, when plotting is required (needs an extra Thread)
   thread = ProcessingThread(stream, target)
   thread.start()
-  plt.title('Proofingcontroller')
-  with warnings.catch_warnings(action="ignore"):
-    plt.legend()
   plt.show()
 
 

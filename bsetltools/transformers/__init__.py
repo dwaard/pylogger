@@ -1,6 +1,7 @@
 import csv as csv_module
 import datetime
 from bsetltools.transformers.Parser import Parser
+from bsetltools.transformers.Serializer import Serializer
 from collections.abc import Iterable
 import time  # Voor de wachttijd in de delayer
 import logging
@@ -160,3 +161,7 @@ def joiner(sources, delimiter=',', verbosity=0):
     if verbosity > 2:
       logging.debug(f"Joinertransformer: joined {data}")
     yield data
+
+
+def serializer(*args, **kwargs):
+  return Serializer(*args, **kwargs)

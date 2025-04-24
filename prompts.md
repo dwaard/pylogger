@@ -1,4 +1,35 @@
+De locatie van een as wordt bepaald door de variabele location. Je hebt de volgende code:
+      axis.yaxis.set_label_position(location)
+      if location == 'right':
+        axis.yaxis.tick_right()
+        if self.rigt_outward_position > 0:
+          axis.spines[location].set_position(("outward", self.rigt_outward_position))  # schuif hem iets opzij
+        self.rigt_outward_position += 50
+      else:
+        axis.yaxis.tick_left()
+Het resultaat is alleen dat de ticks van de eerste as blijven links staan. Wat is er mis?
+
+
 Je programmeert in python. Inspringen met 2 spaties en engelstalige variabelen en comments. 
+Voorzie de volgende klasse van doc comments, inclusief alle methods:
+class ProcessingThread(threading.Thread):
+
+  def __init__(self, source, writer):
+    threading.Thread.__init__(self)
+    self.setDaemon(True)
+    self.source = source
+    self.writer = writer
+
+
+  def start(self):
+    threading.Thread.start(self)
+
+
+  def run(self):
+    for item in self.source:
+      self.writer.write(item)
+
+
 Je hebt een reeks csv bestanden in een folder met de naam `.out`. Er staan ook andere bestanden in deze folder.
 Sommige CSV bestanden hebben het formaat:
 2025-04-10 20:54:12.647230;25.00;28.20;0.50
